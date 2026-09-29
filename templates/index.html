@@ -509,6 +509,95 @@ body {
     text-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
 }
 
+/* 최저가 쇼핑 바로가기 버튼 그룹 */
+.shop-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.shop-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(15, 23, 42, 0.9);
+    cursor: pointer;
+}
+
+.shop-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.shop-icon {
+    font-size: 1rem;
+    display: inline-block;
+}
+
+/* 다나와 버튼 (블루) */
+.danawa-btn {
+    border-color: rgba(59, 130, 246, 0.45);
+    color: #93c5fd;
+    background: rgba(30, 58, 138, 0.2);
+}
+.danawa-btn:hover {
+    background: rgba(37, 99, 235, 0.35);
+    border-color: #60a5fa;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.4);
+}
+
+/* 네이버 쇼핑 버튼 (그린) */
+.naver-btn {
+    border-color: rgba(34, 197, 94, 0.45);
+    color: #86efac;
+    background: rgba(20, 83, 45, 0.2);
+}
+.naver-btn:hover {
+    background: rgba(22, 163, 74, 0.35);
+    border-color: #4ade80;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.4);
+}
+
+/* 쿠팡 버튼 (레드/오렌지) */
+.coupang-btn {
+    border-color: rgba(239, 68, 68, 0.45);
+    color: #fca5a5;
+    background: rgba(127, 29, 29, 0.2);
+}
+.coupang-btn:hover {
+    background: rgba(220, 38, 38, 0.35);
+    border-color: #f87171;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+}
+
+.rec-shop-container {
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.rec-shop-title {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
 .bullet-list {
     list-style: none;
     display: flex;
@@ -741,8 +830,14 @@ body {
                         <!-- 최신 실거래 가격대 -->
                         <tr class="highlight-row">
                             <td class="category-name">💰 최신 실거래 가격대</td>
-                            <td id="val-price-a" class="val-price">-</td>
-                            <td id="val-price-b" class="val-price">-</td>
+                            <td class="val-price-cell">
+                                <span id="val-price-a" class="val-price">-</span>
+                                <div id="val-shop-a" class="shop-btn-group"></div>
+                            </td>
+                            <td class="val-price-cell">
+                                <span id="val-price-b" class="val-price">-</span>
+                                <div id="val-shop-b" class="shop-btn-group"></div>
+                            </td>
                         </tr>
                         <!-- 프로세서 (AP/CPU) -->
                         <tr>
@@ -804,10 +899,18 @@ body {
                     <div class="rec-box rec-a">
                         <strong id="rec-a-title">기기 A 추천 대상</strong>
                         <p id="rec-a-desc">-</p>
+                        <div class="rec-shop-container">
+                            <div class="rec-shop-title">🛒 실시간 최저가 둘러보기 / 구매</div>
+                            <div id="rec-shop-a" class="shop-btn-group"></div>
+                        </div>
                     </div>
                     <div class="rec-box rec-b">
                         <strong id="rec-b-title">기기 B 추천 대상</strong>
                         <p id="rec-b-desc">-</p>
+                        <div class="rec-shop-container">
+                            <div class="rec-shop-title">🛒 실시간 최저가 둘러보기 / 구매</div>
+                            <div id="rec-shop-b" class="shop-btn-group"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -951,6 +1054,27 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
+    // 최저가 쇼핑몰 3대장 (다나와 / 네이버 쇼핑 / 쿠팡) 딥링크 생성 함수
+    function createShoppingLinksHtml(deviceName) {
+        if (!deviceName) return "";
+        const q = encodeURIComponent(deviceName.trim());
+        const danawaUrl = `https://search.danawa.com/dsearch.php?query=${q}`;
+        const naverUrl = `https://search.shopping.naver.com/search/all?query=${q}`;
+        const coupangUrl = `https://www.coupang.com/np/search?component=&q=${q}`;
+
+        return `
+            <a href="${danawaUrl}" target="_blank" rel="noopener noreferrer" class="shop-btn danawa-btn" title="다나와에서 실시간 최저가 비교">
+                <span class="shop-icon">📊</span> 다나와 최저가
+            </a>
+            <a href="${naverUrl}" target="_blank" rel="noopener noreferrer" class="shop-btn naver-btn" title="네이버 쇼핑에서 최저가 검색">
+                <span class="shop-icon">🟢</span> 네이버 쇼핑
+            </a>
+            <a href="${coupangUrl}" target="_blank" rel="noopener noreferrer" class="shop-btn coupang-btn" title="쿠팡 로켓/최저가 둘러보기">
+                <span class="shop-icon">🚀</span> 쿠팡 바로가기
+            </a>
+        `;
+    }
+
     // 3. 비교 결과 렌더링 함수
     function renderComparison(data) {
         const devA = data.device_a;
@@ -985,6 +1109,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // 가격
         document.getElementById("val-price-a").textContent = devA.price_range || "가격 정보 없음";
         document.getElementById("val-price-b").textContent = devB.price_range || "가격 정보 없음";
+
+        // 최저가 쇼핑몰 바로가기 링크 주입 (가격 셀 & 하단 추천 박스)
+        const shopHtmlA = createShoppingLinksHtml(devA.name);
+        const shopHtmlB = createShoppingLinksHtml(devB.name);
+
+        const valShopA = document.getElementById("val-shop-a");
+        const valShopB = document.getElementById("val-shop-b");
+        if (valShopA) valShopA.innerHTML = shopHtmlA;
+        if (valShopB) valShopB.innerHTML = shopHtmlB;
+
+        const recShopA = document.getElementById("rec-shop-a");
+        const recShopB = document.getElementById("rec-shop-b");
+        if (recShopA) recShopA.innerHTML = shopHtmlA;
+        if (recShopB) recShopB.innerHTML = shopHtmlB;
 
         // 상세 스펙
         document.getElementById("val-cpu-a").textContent = devA.specs.processor || "-";
@@ -1079,6 +1217,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const a = data.device_a;
         const b = data.device_b;
         const v = data.overall_verdict;
+        const qA = encodeURIComponent(a.name);
+        const qB = encodeURIComponent(b.name);
 
         return `# ⚡ IT 기기 비교 대조: ${a.name} vs ${b.name}
 
@@ -1093,6 +1233,17 @@ document.addEventListener("DOMContentLoaded", () => {
 | **배터리 / 충전** | ${a.specs.battery} | ${b.specs.battery} |
 | **무게 및 휴대성** | ${a.specs.weight} | ${b.specs.weight} |
 | **실사용자 리뷰 요약** | ${a.review_summary} | ${b.review_summary} |
+
+## 🛒 최저가 쇼핑 바로가기
+### 🔹 ${a.name}
+- [다나와 실시간 최저가 확인](https://search.danawa.com/dsearch.php?query=${qA})
+- [네이버 쇼핑 최저가 비교](https://search.shopping.naver.com/search/all?query=${qA})
+- [쿠팡 로켓/최저가 둘러보기](https://www.coupang.com/np/search?component=&q=${qA})
+
+### 🔹 ${b.name}
+- [다나와 실시간 최저가 확인](https://search.danawa.com/dsearch.php?query=${qB})
+- [네이버 쇼핑 최저가 비교](https://search.shopping.naver.com/search/all?query=${qB})
+- [쿠팡 로켓/최저가 둘러보기](https://www.coupang.com/np/search?component=&q=${qB})
 
 ## 👍 핵심 장점
 ### ${a.name}

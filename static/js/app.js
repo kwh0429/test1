@@ -113,6 +113,27 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
+    // 최저가 쇼핑몰 3대장 (다나와 / 네이버 쇼핑 / 쿠팡) 딥링크 생성 함수
+    function createShoppingLinksHtml(deviceName) {
+        if (!deviceName) return "";
+        const q = encodeURIComponent(deviceName.trim());
+        const danawaUrl = `https://search.danawa.com/dsearch.php?query=${q}`;
+        const naverUrl = `https://search.shopping.naver.com/search/all?query=${q}`;
+        const coupangUrl = `https://www.coupang.com/np/search?component=&q=${q}`;
+
+        return `
+            <a href="${danawaUrl}" target="_blank" rel="noopener noreferrer" class="shop-btn danawa-btn" title="다나와에서 실시간 최저가 비교">
+                <span class="shop-icon">📊</span> 다나와 최저가
+            </a>
+            <a href="${naverUrl}" target="_blank" rel="noopener noreferrer" class="shop-btn naver-btn" title="네이버 쇼핑에서 최저가 검색">
+                <span class="shop-icon">🟢</span> 네이버 쇼핑
+            </a>
+            <a href="${coupangUrl}" target="_blank" rel="noopener noreferrer" class="shop-btn coupang-btn" title="쿠팡 로켓/최저가 둘러보기">
+                <span class="shop-icon">🚀</span> 쿠팡 바로가기
+            </a>
+        `;
+    }
+
     // 3. 비교 결과 렌더링 함수
     function renderComparison(data) {
         const devA = data.device_a;
@@ -147,6 +168,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // 가격
         document.getElementById("val-price-a").textContent = devA.price_range || "가격 정보 없음";
         document.getElementById("val-price-b").textContent = devB.price_range || "가격 정보 없음";
+
+        // 최저가 쇼핑몰 바로가기 링크 주입 (가격 셀 & 하단 추천 박스)
+        const shopHtmlA = createShoppingLinksHtml(devA.name);
+        const shopHtmlB = createShoppingLinksHtml(devB.name);
+
+        const valShopA = document.getElementById("val-shop-a");
+        const valShopB = document.getElementById("val-shop-b");
+        if (valShopA) valShopA.innerHTML = shopHtmlA;
+        if (valShopB) valShopB.innerHTML = shopHtmlB;
+
+        const recShopA = document.getElementById("rec-shop-a");
+        const recShopB = document.getElementById("rec-shop-b");
+        if (recShopA) recShopA.innerHTML = shopHtmlA;
+        if (recShopB) recShopB.innerHTML = shopHtmlB;
 
         // 상세 스펙
         document.getElementById("val-cpu-a").textContent = devA.specs.processor || "-";
@@ -241,6 +276,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const a = data.device_a;
         const b = data.device_b;
         const v = data.overall_verdict;
+        const qA = encodeURIComponent(a.name);
+        const qB = encodeURIComponent(b.name);
 
         return `# ⚡ IT 기기 비교 대조: ${a.name} vs ${b.name}
 
@@ -255,6 +292,17 @@ document.addEventListener("DOMContentLoaded", () => {
 | **배터리 / 충전** | ${a.specs.battery} | ${b.specs.battery} |
 | **무게 및 휴대성** | ${a.specs.weight} | ${b.specs.weight} |
 | **실사용자 리뷰 요약** | ${a.review_summary} | ${b.review_summary} |
+
+## 🛒 최저가 쇼핑 바로가기
+### 🔹 ${a.name}
+- [다나와 실시간 최저가 확인](https://search.danawa.com/dsearch.php?query=${qA})
+- [네이버 쇼핑 최저가 비교](https://search.shopping.naver.com/search/all?query=${qA})
+- [쿠팡 로켓/최저가 둘러보기](https://www.coupang.com/np/search?component=&q=${qA})
+
+### 🔹 ${b.name}
+- [다나와 실시간 최저가 확인](https://search.danawa.com/dsearch.php?query=${qB})
+- [네이버 쇼핑 최저가 비교](https://search.shopping.naver.com/search/all?query=${qB})
+- [쿠팡 로켓/최저가 둘러보기](https://www.coupang.com/np/search?component=&q=${qB})
 
 ## 👍 핵심 장점
 ### ${a.name}
