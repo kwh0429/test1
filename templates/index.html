@@ -23,24 +23,24 @@
 :root {
     --primary: #6366f1;
     --primary-hover: #4f46e5;
-    --primary-glow: rgba(99, 102, 241, 0.4);
+    --primary-glow: rgba(99, 102, 241, 0.35);
     --cyan-glow: #06b6d4;
-    --device-a: #38bdf8;
-    --device-a-bg: rgba(56, 189, 248, 0.12);
-    --device-b: #34d399;
-    --device-b-bg: rgba(52, 211, 153, 0.12);
-    --bg-main: #090d16;
-    --card-bg: rgba(17, 24, 39, 0.75);
-    --card-border: rgba(255, 255, 255, 0.08);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: rgba(255, 255, 255, 0.09);
-    --border-highlight: rgba(99, 102, 241, 0.35);
+    --device-a: #0ea5e9;
+    --device-a-bg: rgba(14, 165, 233, 0.15);
+    --device-b: #10b981;
+    --device-b-bg: rgba(16, 185, 129, 0.15);
+    --bg-main: #131b2e;
+    --card-bg: rgba(26, 36, 56, 0.88);
+    --card-border: rgba(255, 255, 255, 0.12);
+    --text-main: #ffffff;
+    --text-muted: #cbd5e1;
+    --border: rgba(255, 255, 255, 0.12);
+    --border-highlight: rgba(99, 102, 241, 0.45);
     --success: #34d399;
     --danger: #f87171;
     --radius: 18px;
-    --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 20px 35px -10px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -53,12 +53,12 @@ body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     background-color: var(--bg-main);
     background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
-        radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.1) 0px, transparent 60%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.22) 0px, transparent 55%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.2) 0px, transparent 55%),
+        radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.15) 0px, transparent 65%),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.6;
@@ -380,10 +380,53 @@ body {
     border: 1px solid var(--card-border);
 }
 
-.comparison-table {
+.device-header-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 0;
+}
+
+.device-img-wrapper {
+    width: 130px;
+    height: 130px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.25s ease;
+}
+
+.device-img-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.device-img {
     width: 100%;
-    border-collapse: collapse;
-    text-align: left;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+.col-device-a .device-img-wrapper {
+    border-color: rgba(14, 165, 233, 0.4);
+    box-shadow: 0 0 18px rgba(14, 165, 233, 0.2);
+}
+
+.col-device-b .device-img-wrapper {
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.2);
+}
+
+.device-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-align: center;
 }
 
 .comparison-table th,
@@ -644,8 +687,24 @@ body {
                     <thead>
                         <tr>
                             <th class="col-category">비교 항목</th>
-                            <th id="th-device-a" class="col-device-a">기기 A</th>
-                            <th id="th-device-b" class="col-device-b">기기 B</th>
+                            <th id="th-device-a" class="col-device-a">
+                                <div class="device-header-cell">
+                                    <div class="device-img-wrapper" id="img-wrapper-a">
+                                        <img id="img-device-a" class="device-img" src="" alt="기기 A 대표이미지" style="display: none;">
+                                        <span id="img-placeholder-a" style="font-size: 2.2rem;">📱</span>
+                                    </div>
+                                    <span id="name-device-a" class="device-title">기기 A</span>
+                                </div>
+                            </th>
+                            <th id="th-device-b" class="col-device-b">
+                                <div class="device-header-cell">
+                                    <div class="device-img-wrapper" id="img-wrapper-b">
+                                        <img id="img-device-b" class="device-img" src="" alt="기기 B 대표이미지" style="display: none;">
+                                        <span id="img-placeholder-b" style="font-size: 2.2rem;">📱</span>
+                                    </div>
+                                    <span id="name-device-b" class="device-title">기기 B</span>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -824,11 +883,33 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderComparison(data) {
         const devA = data.device_a;
         const devB = data.device_b;
-        const verdict = data.overall_verdict;
+        // 테이블 헤더 (이름 및 대표 이미지)
+        document.getElementById("name-device-a").textContent = devA.name;
+        document.getElementById("name-device-b").textContent = devB.name;
 
-        // 테이블 헤더
-        document.getElementById("th-device-a").textContent = devA.name;
-        document.getElementById("th-device-b").textContent = devB.name;
+        // 기기 A 이미지
+        const imgA = document.getElementById("img-device-a");
+        const placeholderA = document.getElementById("img-placeholder-a");
+        if (devA.image_url) {
+            imgA.src = devA.image_url;
+            imgA.style.display = "block";
+            placeholderA.style.display = "none";
+        } else {
+            imgA.style.display = "none";
+            placeholderA.style.display = "block";
+        }
+
+        // 기기 B 이미지
+        const imgB = document.getElementById("img-device-b");
+        const placeholderB = document.getElementById("img-placeholder-b");
+        if (devB.image_url) {
+            imgB.src = devB.image_url;
+            imgB.style.display = "block";
+            placeholderB.style.display = "none";
+        } else {
+            imgB.style.display = "none";
+            placeholderB.style.display = "block";
+        }
 
         // 가격
         document.getElementById("val-price-a").textContent = devA.price_range || "가격 정보 없음";

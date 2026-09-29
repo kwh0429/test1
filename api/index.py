@@ -29,6 +29,24 @@ def search_web_serper(query: str, serper_key: str) -> list:
     except Exception:
         return []
 
+def search_image_serper(device_name: str, serper_key: str) -> str:
+    """기기의 대표 이미지를 구글 이미지 검색(Serper Images)으로 가져오는 함수"""
+    if not serper_key:
+        return ""
+    url = "https://google.serper.dev/images"
+    headers = {"X-API-KEY": serper_key, "Content-Type": "application/json"}
+    payload = {"q": f"{device_name} official 누끼 제품", "num": 3, "gl": "kr"}
+    try:
+        res = requests.post(url, headers=headers, json=payload, timeout=8)
+        res.raise_for_status()
+        data = res.json()
+        images = data.get("images", [])
+        if images and len(images) > 0:
+            return images[0].get("imageUrl", "")
+    except Exception as e:
+        logger.error(f"이미지 검색 실패: {e}")
+    return ""
+
 def generate_comparison_with_gemini(device_a: str, device_b: str, data_a: list, data_b: list, gemini_key: str) -> dict:
     genai.configure(api_key=gemini_key)
     model = genai.GenerativeModel("gemini-flash-lite-latest")
@@ -110,7 +128,18 @@ def catch_all(path):
         search_a = search_web_serper(f"{device_a} 스펙 가격 장단점 리뷰", serper_key)
         search_b = search_web_serper(f"{device_b} 스펙 가격 장단점 리뷰", serper_key)
 
+        # 각 기기의 대표 이미지 검색
+        img_a = search_image_serper(device_a, serper_key)
+        img_b = search_image_serper(device_b, serper_key)
+
         result = generate_comparison_with_gemini(device_a, device_b, search_a, search_b, gemini_key)
+        
+        # 이미지 URL 결과에 주입
+        if "device_a" in result:
+            result["device_a"]["image_url"] = img_a
+        if "device_b" in result:
+            result["device_b"]["image_url"] = img_b
+
         return jsonify({"success": True, "data": result})
 
     # GET 요청 시 메인 HTML 화면 직접 반환
