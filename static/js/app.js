@@ -232,4 +232,13 @@ ${b.cons.map(c => `- ${c}`).join("\n")}
     function hideError() {
         errorBox.classList.add("hidden");
     }
+
+    // PWA 서비스 워커 등록
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/static/sw.js")
+                .then(reg => console.log("PWA ServiceWorker 등록 완료:", reg.scope))
+                .catch(err => console.log("PWA ServiceWorker 등록 실패:", err));
+        });
+    }
 });

@@ -1,0 +1,23 @@
+{
+  "name": "AI IT Device Comparator",
+  "short_name": "기기비교",
+  "description": "실시간 구글 검색과 Gemini AI 기반 IT 기기 스펙 및 가격 대조기",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
