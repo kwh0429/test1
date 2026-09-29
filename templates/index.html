@@ -721,7 +721,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 data = JSON.parse(textResponse);
             } catch (pErr) {
                 console.error("응답 텍스트 원문:", textResponse);
-                throw new Error("서버에서 올바른 JSON 응답을 받지 못했습니다. 환경 변수(API 키)가 Vercel에 설정되어 있는지 확인해 주세요.");
+                const snippet = textResponse.length > 200 ? textResponse.substring(0, 200) + "..." : textResponse;
+                throw new Error(`[서버 상태 코드: ${response.status}] 서버 응답 내용:\n${snippet}`);
             }
 
             if (!response.ok || !data.success) {
