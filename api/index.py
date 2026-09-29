@@ -2,7 +2,7 @@ import os
 import json
 import logging
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 import google.generativeai as genai
 
@@ -207,8 +207,17 @@ def catch_all(path):
 
         return jsonify({"success": True, "data": result})
 
-    # GET 요청 시 메인 HTML 화면 직접 반환
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    static_dir = os.path.join(base_dir, "static")
+
+    # 정적 파일 서빙 (/static/... 또는 manifest.json, sw.js, favicon.ico)
+    if path.startswith("static/"):
+        rel_path = path[len("static/"):]
+        return send_from_directory(static_dir, rel_path)
+    if path in ["manifest.json", "sw.js", "favicon.ico"]:
+        return send_from_directory(static_dir, path)
+
+    # GET 요청 시 메인 HTML 화면 직접 반환
     html_path = os.path.join(base_dir, "templates", "index.html")
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read(), 200, {"Content-Type": "text/html; charset=utf-8"}

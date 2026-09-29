@@ -69,6 +69,97 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // 📲 PWA 앱 다운로드 및 아이폰 설치 가이드 제어
+    const appInstallBtn = document.getElementById("app-install-btn");
+    const pwaInstallBanner = document.getElementById("pwa-install-banner");
+    const pwaBannerInstallBtn = document.getElementById("pwa-banner-install-btn");
+    const pwaBannerCloseBtn = document.getElementById("pwa-banner-close-btn");
+    const pwaBannerTitle = document.getElementById("pwa-banner-title");
+    const pwaBannerDesc = document.getElementById("pwa-banner-desc");
+
+    const iosInstallModal = document.getElementById("ios-install-modal");
+    const iosModalCloseBtn = document.getElementById("ios-modal-close-btn");
+    const iosModalConfirmBtn = document.getElementById("ios-modal-confirm-btn");
+
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent.toLowerCase());
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    let deferredInstallPrompt = null;
+
+    const openIosGuide = () => {
+        if (iosInstallModal) iosInstallModal.classList.remove("hidden");
+    };
+
+    const closeIosGuide = () => {
+        if (iosInstallModal) iosInstallModal.classList.add("hidden");
+    };
+
+    if (iosModalCloseBtn) iosModalCloseBtn.addEventListener("click", closeIosGuide);
+    if (iosModalConfirmBtn) iosModalConfirmBtn.addEventListener("click", closeIosGuide);
+    if (iosInstallModal) {
+        iosInstallModal.addEventListener("click", (e) => {
+            if (e.target === iosInstallModal) closeIosGuide();
+        });
+    }
+
+    // 이미 설치된 단독 앱(Standalone)으로 실행 중인 경우 배너 표시 안 함
+    if (!isStandalone) {
+        // 아이폰(iOS)인 경우 맞춤 배너 및 가이드 세팅
+        if (isIos) {
+            if (pwaBannerTitle) pwaBannerTitle.textContent = "🍎 아이폰 홈 화면에 앱 다운로드";
+            if (pwaBannerDesc) pwaBannerDesc.textContent = "Safari 하단 [공유 ⎋] 누르고 [홈 화면에 추가]를 터치하세요!";
+            if (pwaBannerInstallBtn) pwaBannerInstallBtn.textContent = "📲 설치 방법 보기";
+
+            // 아이폰 접속 시 1.2초 후 하단 배너 부드럽게 노출 (세션 중 닫지 않았을 때)
+            if (!sessionStorage.getItem("pwa_banner_closed")) {
+                setTimeout(() => {
+                    if (pwaInstallBanner) pwaInstallBanner.classList.remove("hidden");
+                }, 1200);
+            }
+
+            // 헤더 및 배너 버튼 클릭 시 아이폰 가이드 모달 오픈
+            if (appInstallBtn) appInstallBtn.addEventListener("click", openIosGuide);
+            if (pwaBannerInstallBtn) pwaBannerInstallBtn.addEventListener("click", openIosGuide);
+
+        } else {
+            // 안드로이드 / PC / 맥 브라우저 (Chrome, Edge 등)
+            window.addEventListener("beforeinstallprompt", (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+
+                if (!sessionStorage.getItem("pwa_banner_closed") && pwaInstallBanner) {
+                    pwaInstallBanner.classList.remove("hidden");
+                }
+            });
+
+            const handleInstallClick = async () => {
+                if (deferredInstallPrompt) {
+                    deferredInstallPrompt.prompt();
+                    const { outcome } = await deferredInstallPrompt.userChoice;
+                    if (outcome === "accepted" && pwaInstallBanner) {
+                        pwaInstallBanner.classList.add("hidden");
+                    }
+                    deferredInstallPrompt = null;
+                } else {
+                    alert("브라우저 주소창 우측의 [설치] 아이콘을 누르시거나, 브라우저 메뉴(⋮)에서 [앱 설치]를 선택해 주세요!");
+                }
+            };
+
+            if (appInstallBtn) appInstallBtn.addEventListener("click", handleInstallClick);
+            if (pwaBannerInstallBtn) pwaBannerInstallBtn.addEventListener("click", handleInstallClick);
+        }
+
+        // 배너 닫기 버튼
+        if (pwaBannerCloseBtn && pwaInstallBanner) {
+            pwaBannerCloseBtn.addEventListener("click", () => {
+                pwaInstallBanner.classList.add("hidden");
+                sessionStorage.setItem("pwa_banner_closed", "true");
+            });
+        }
+    } else {
+        // 이미 앱으로 실행 중이면 상단 설치 뱃지 숨김
+        if (appInstallBtn) appInstallBtn.style.display = "none";
+    }
+
     // 최신 비교 결과를 저장할 전역 변수
     let currentComparisonData = null;
 

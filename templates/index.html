@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI IT 기기 스펙 & 가격 대조기 | AI Tech Comparator</title>
-    <!-- PWA 모바일 설정 -->
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="theme-color" content="#4f46e5">
+    <!-- PWA 및 모바일 앱 설정 -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#131b2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="기기비교">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/static/icon-512.png">
     <!-- 구글 폰트 (Pretendard 스타일) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -929,6 +931,198 @@ body {
     font-size: 0.98rem;
 }
 
+/* 📲 헤더 앱 설치 뱃지 */
+.install-badge {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(52, 211, 153, 0.5) !important;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.install-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+}
+
+/* 📲 스마트 PWA 설치 바텀 플로팅 배너 */
+.pwa-install-banner {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 560px;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1.5px solid rgba(16, 185, 129, 0.55);
+    border-radius: 18px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.3);
+    backdrop-filter: blur(14px);
+    padding: 0.95rem 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    z-index: 9990;
+    animation: slideUpBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpBanner {
+    from { transform: translate(-50%, 80px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.pwa-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.pwa-banner-icon {
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pwa-banner-text strong {
+    font-size: 0.96rem;
+    color: #f1f5f9;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.pwa-banner-text p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.pwa-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+.pwa-install-action-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 0.6rem 1.1rem;
+    border-radius: 11px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.pwa-install-action-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.55);
+}
+
+.pwa-close-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 1.6rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.2rem;
+    transition: color 0.2s;
+}
+.pwa-close-btn:hover {
+    color: #ffffff;
+}
+
+/* 🍎 아이폰 안내 전용 모달 및 스텝 스타일 */
+.ios-modal-card {
+    border-color: rgba(56, 189, 248, 0.55) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(56, 189, 248, 0.3) !important;
+}
+
+.ios-guide-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.ios-guide-intro {
+    font-size: 0.93rem;
+    color: #e2e8f0;
+    line-height: 1.6;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 0.85rem 1.1rem;
+}
+
+.ios-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.ios-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.95rem;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.95rem 1.1rem;
+}
+
+.ios-step-num {
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 0.88rem;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ios-step-text {
+    font-size: 0.92rem;
+    color: #f1f5f9;
+    line-height: 1.5;
+}
+
+.ios-icon-hint {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    color: #38bdf8;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ios-share-icon, .ios-add-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(14, 165, 233, 0.2);
+    border: 1px solid rgba(14, 165, 233, 0.4);
+    padding: 0.12rem 0.45rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #ffffff;
+}
+
 /* 푸터 */
 .footer {
     text-align: center;
@@ -975,6 +1169,9 @@ body {
             <div class="badge-wrapper">
                 <span class="badge glow-badge">⚡ Next-Gen AI IT Comparator</span>
                 <span class="badge creator-badge">🔥 권우현이 2시간만에 만듦</span>
+                <button type="button" id="app-install-btn" class="badge install-badge" title="스마트폰/PC 앱으로 다운로드 및 홈 화면 추가">
+                    📲 앱 다운로드 (설치)
+                </button>
             </div>
             <h1 class="main-title">AI IT Device Comparator</h1>
             <p class="subtitle">비교하고 싶은 기기 2종을 입력하면, 실시간 구글 웹 검색과 Gemini AI가 스펙, 최신 가격, 실사용자 장단점을 대조해 드립니다.</p>
@@ -1254,6 +1451,66 @@ body {
         </div>
     </div>
 
+    <!-- 🍎 아이폰(iOS) 전용 홈 화면 추가(다운로드) 안내 모달 -->
+    <div id="ios-install-modal" class="modal-overlay hidden">
+        <div class="modal-card ios-modal-card">
+            <div class="modal-header">
+                <h3>🍎 아이폰 홈 화면에 앱 다운로드</h3>
+                <button type="button" id="ios-modal-close-btn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ios-guide-box">
+                    <p class="ios-guide-intro">
+                        아이폰 사파리(Safari)에서는 아래 <strong>3단계</strong>로 앱스토어 어플처럼 홈 화면에 바로 설치할 수 있습니다!
+                    </p>
+                    <div class="ios-steps">
+                        <div class="ios-step-item">
+                            <div class="ios-step-num">1</div>
+                            <div class="ios-step-text">
+                                사파리 화면 <strong>하단 중앙의 공유 버튼</strong> 터치
+                                <div class="ios-icon-hint"><span class="ios-share-icon">⎋</span> (네모 속 위쪽 화살표)</div>
+                            </div>
+                        </div>
+                        <div class="ios-step-item">
+                            <div class="ios-step-num">2</div>
+                            <div class="ios-step-text">
+                                아래로 살짝 스크롤하여 <strong>[홈 화면에 추가]</strong> 터치
+                                <div class="ios-icon-hint"><span class="ios-add-icon">➕</span> 홈 화면에 추가</div>
+                            </div>
+                        </div>
+                        <div class="ios-step-item">
+                            <div class="ios-step-num">3</div>
+                            <div class="ios-step-text">
+                                오른쪽 상단의 <strong>[추가]</strong> 버튼을 누르면 설치 완료!
+                                <div class="ios-icon-hint">🎉 홈 화면에 '기기비교' 단독 앱 아이콘이 생성됩니다.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="ios-modal-confirm-btn" class="primary-btn modal-confirm-btn">확인했습니다! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📲 스마트 앱 다운로드 / 설치 바텀 플로팅 배너 -->
+    <div id="pwa-install-banner" class="pwa-install-banner hidden">
+        <div class="pwa-banner-content">
+            <div class="pwa-banner-icon">📱</div>
+            <div class="pwa-banner-text">
+                <strong id="pwa-banner-title">홈 화면에 앱으로 다운로드</strong>
+                <p id="pwa-banner-desc">스마트폰 홈 화면에 1초 만에 앱으로 설치하세요!</p>
+            </div>
+        </div>
+        <div class="pwa-banner-actions">
+            <button type="button" id="pwa-banner-install-btn" class="pwa-install-action-btn">
+                📲 바로 다운로드
+            </button>
+            <button type="button" id="pwa-banner-close-btn" class="pwa-close-btn" title="닫기">&times;</button>
+        </div>
+    </div>
+
     <!-- 프론트엔드 자바스크립트 로드 -->
     <script>
 // ==========================================================
@@ -1322,6 +1579,97 @@ document.addEventListener("DOMContentLoaded", () => {
     dictionaryModal.addEventListener("click", (e) => {
         if (e.target === dictionaryModal) closeModal();
     });
+
+    // 📲 PWA 앱 다운로드 및 아이폰 설치 가이드 제어
+    const appInstallBtn = document.getElementById("app-install-btn");
+    const pwaInstallBanner = document.getElementById("pwa-install-banner");
+    const pwaBannerInstallBtn = document.getElementById("pwa-banner-install-btn");
+    const pwaBannerCloseBtn = document.getElementById("pwa-banner-close-btn");
+    const pwaBannerTitle = document.getElementById("pwa-banner-title");
+    const pwaBannerDesc = document.getElementById("pwa-banner-desc");
+
+    const iosInstallModal = document.getElementById("ios-install-modal");
+    const iosModalCloseBtn = document.getElementById("ios-modal-close-btn");
+    const iosModalConfirmBtn = document.getElementById("ios-modal-confirm-btn");
+
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent.toLowerCase());
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    let deferredInstallPrompt = null;
+
+    const openIosGuide = () => {
+        iosInstallModal.classList.remove("hidden");
+    };
+
+    const closeIosGuide = () => {
+        iosInstallModal.classList.add("hidden");
+    };
+
+    if (iosModalCloseBtn) iosModalCloseBtn.addEventListener("click", closeIosGuide);
+    if (iosModalConfirmBtn) iosModalConfirmBtn.addEventListener("click", closeIosGuide);
+    if (iosInstallModal) {
+        iosInstallModal.addEventListener("click", (e) => {
+            if (e.target === iosInstallModal) closeIosGuide();
+        });
+    }
+
+    // 이미 설치된 단독 앱(Standalone)으로 실행 중인 경우 배너 표시 안 함
+    if (!isStandalone) {
+        // 아이폰(iOS)인 경우 맞춤 배너 및 가이드 세팅
+        if (isIos) {
+            if (pwaBannerTitle) pwaBannerTitle.textContent = "🍎 아이폰 홈 화면에 앱 다운로드";
+            if (pwaBannerDesc) pwaBannerDesc.textContent = "Safari 하단 [공유 ⎋] 누르고 [홈 화면에 추가]를 터치하세요!";
+            if (pwaBannerInstallBtn) pwaBannerInstallBtn.textContent = "📲 설치 방법 보기";
+
+            // 아이폰 접속 시 1.2초 후 하단 배너 부드럽게 노출 (세션 중 닫지 않았을 때)
+            if (!sessionStorage.getItem("pwa_banner_closed")) {
+                setTimeout(() => {
+                    if (pwaInstallBanner) pwaInstallBanner.classList.remove("hidden");
+                }, 1200);
+            }
+
+            // 헤더 및 배너 버튼 클릭 시 아이폰 가이드 모달 오픈
+            if (appInstallBtn) appInstallBtn.addEventListener("click", openIosGuide);
+            if (pwaBannerInstallBtn) pwaBannerInstallBtn.addEventListener("click", openIosGuide);
+
+        } else {
+            // 안드로이드 / PC / 맥 브라우저 (Chrome, Edge 등)
+            window.addEventListener("beforeinstallprompt", (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+
+                if (!sessionStorage.getItem("pwa_banner_closed") && pwaInstallBanner) {
+                    pwaInstallBanner.classList.remove("hidden");
+                }
+            });
+
+            const handleInstallClick = async () => {
+                if (deferredInstallPrompt) {
+                    deferredInstallPrompt.prompt();
+                    const { outcome } = await deferredInstallPrompt.userChoice;
+                    if (outcome === "accepted" && pwaInstallBanner) {
+                        pwaInstallBanner.classList.add("hidden");
+                    }
+                    deferredInstallPrompt = null;
+                } else {
+                    alert("브라우저 주소창 우측의 [설치] 아이콘을 누르시거나, 브라우저 메뉴(⋮)에서 [앱 설치]를 선택해 주세요!");
+                }
+            };
+
+            if (appInstallBtn) appInstallBtn.addEventListener("click", handleInstallClick);
+            if (pwaBannerInstallBtn) pwaBannerInstallBtn.addEventListener("click", handleInstallClick);
+        }
+
+        // 배너 닫기 버튼
+        if (pwaBannerCloseBtn && pwaInstallBanner) {
+            pwaBannerCloseBtn.addEventListener("click", () => {
+                pwaInstallBanner.classList.add("hidden");
+                sessionStorage.setItem("pwa_banner_closed", "true");
+            });
+        }
+    } else {
+        // 이미 앱으로 실행 중이면 상단 설치 뱃지 숨김
+        if (appInstallBtn) appInstallBtn.style.display = "none";
+    }
 
     // 최신 비교 결과를 저장할 전역 변수
     let currentComparisonData = null;
