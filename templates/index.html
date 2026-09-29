@@ -884,47 +884,35 @@ document.addEventListener("DOMContentLoaded", () => {
         const devA = data.device_a;
         const devB = data.device_b;
         const verdict = data.overall_verdict || {};
-        // 테이블 헤더 (이름 및 대표 이미지)
-        document.getElementById("name-device-a").textContent = devA.name;
-        document.getElementById("name-device-b").textContent = devB.name;
+        // 테이블 헤더 (이름 및 대표 이미지 직접 생성 주입)
+        const cellA = document.getElementById("th-device-a");
+        const cellB = document.getElementById("th-device-b");
 
-        // 기기 A 이미지
-        const imgA = document.getElementById("img-device-a");
-        const placeholderA = document.getElementById("img-placeholder-a");
-        if (devA.image_url) {
-            imgA.referrerPolicy = "no-referrer";
-            imgA.src = devA.image_url;
-            imgA.onload = () => {
-                imgA.style.display = "block";
-                placeholderA.style.display = "none";
-            };
-            imgA.onerror = () => {
-                imgA.style.display = "none";
-                placeholderA.style.display = "block";
-            };
-        } else {
-            imgA.style.display = "none";
-            placeholderA.style.display = "block";
-        }
+        const imgHtmlA = devA.image_url 
+            ? `<img class="device-img" src="${devA.image_url}" referrerpolicy="no-referrer" alt="${devA.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&q=80';">`
+            : `<span style="font-size: 2.5rem;">📱</span>`;
 
-        // 기기 B 이미지
-        const imgB = document.getElementById("img-device-b");
-        const placeholderB = document.getElementById("img-placeholder-b");
-        if (devB.image_url) {
-            imgB.referrerPolicy = "no-referrer";
-            imgB.src = devB.image_url;
-            imgB.onload = () => {
-                imgB.style.display = "block";
-                placeholderB.style.display = "none";
-            };
-            imgB.onerror = () => {
-                imgB.style.display = "none";
-                placeholderB.style.display = "block";
-            };
-        } else {
-            imgB.style.display = "none";
-            placeholderB.style.display = "block";
-        }
+        const imgHtmlB = devB.image_url 
+            ? `<img class="device-img" src="${devB.image_url}" referrerpolicy="no-referrer" alt="${devB.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&q=80';">`
+            : `<span style="font-size: 2.5rem;">📱</span>`;
+
+        cellA.innerHTML = `
+            <div class="device-header-cell">
+                <div class="device-img-wrapper">
+                    ${imgHtmlA}
+                </div>
+                <span class="device-title">${devA.name}</span>
+            </div>
+        `;
+
+        cellB.innerHTML = `
+            <div class="device-header-cell">
+                <div class="device-img-wrapper">
+                    ${imgHtmlB}
+                </div>
+                <span class="device-title">${devB.name}</span>
+            </div>
+        `;
 
         // 가격
         document.getElementById("val-price-a").textContent = devA.price_range || "가격 정보 없음";
