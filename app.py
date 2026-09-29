@@ -26,10 +26,12 @@ if not GEMINI_API_KEY:
 else:
     genai.configure(api_key=GEMINI_API_KEY)
 
-if not SERPER_API_KEY:
-    logger.warning("SERPER_API_KEY가 .env 파일에 설정되지 않았습니다.")
-
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static")
+)
 
 
 def search_web_serper(query: str) -> list:
