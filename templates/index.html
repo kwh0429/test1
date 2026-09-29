@@ -883,6 +883,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderComparison(data) {
         const devA = data.device_a;
         const devB = data.device_b;
+        const verdict = data.overall_verdict || {};
         // 테이블 헤더 (이름 및 대표 이미지)
         document.getElementById("name-device-a").textContent = devA.name;
         document.getElementById("name-device-b").textContent = devB.name;
