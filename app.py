@@ -163,6 +163,7 @@ def index():
 
 
 @app.route("/compare", methods=["POST"])
+@app.route("/api/compare", methods=["POST"])
 def compare():
     """기기 비교 비동기 요청 처리 라우트"""
     try:

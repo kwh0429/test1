@@ -703,8 +703,8 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.querySelector(".btn-text").textContent = "⏳ 실시간 검색 및 분석 중...";
 
         try {
-            // 백엔드 /compare API 호출
-            const response = await fetch("/compare", {
+            // 백엔드 /api/compare API 호출
+            const response = await fetch("/api/compare", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -715,7 +715,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            const data = await response.json();
+            let data;
+            const textResponse = await response.text();
+            try {
+                data = JSON.parse(textResponse);
+            } catch (pErr) {
+                console.error("응답 텍스트 원문:", textResponse);
+                throw new Error("서버에서 올바른 JSON 응답을 받지 못했습니다. 환경 변수(API 키)가 Vercel에 설정되어 있는지 확인해 주세요.");
+            }
 
             if (!response.ok || !data.success) {
                 throw new Error(data.error || "비교 분석 중 오류가 발생했습니다.");
