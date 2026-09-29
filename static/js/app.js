@@ -17,6 +17,58 @@ document.addEventListener("DOMContentLoaded", () => {
     const copyBtn = document.getElementById("copy-btn");
     const downloadBtn = document.getElementById("download-btn");
 
+    // 초보자 모드 및 비유 사전 DOM 엘리먼트
+    const beginnerToggleBtn = document.getElementById("beginner-toggle-btn");
+    const beginnerModeStatus = document.getElementById("beginner-mode-status");
+    const dictionaryBtn = document.getElementById("dictionary-btn");
+    const dictionaryModal = document.getElementById("dictionary-modal");
+    const modalCloseBtn = document.getElementById("modal-close-btn");
+    const modalOkBtn = document.getElementById("modal-ok-btn");
+    const beginnerAnalogyCard = document.getElementById("beginner-analogy-card");
+    const beginnerAnalogyText = document.getElementById("beginner-analogy-text");
+    const tableContainer = document.querySelector(".table-container");
+
+    let isBeginnerMode = false;
+
+    // 초보자 쉬운 모드 토글 이벤트
+    if (beginnerToggleBtn) {
+        beginnerToggleBtn.addEventListener("click", () => {
+            isBeginnerMode = !isBeginnerMode;
+            beginnerToggleBtn.classList.toggle("active", isBeginnerMode);
+            if (beginnerModeStatus) beginnerModeStatus.textContent = isBeginnerMode ? "ON" : "OFF";
+            
+            if (tableContainer) {
+                tableContainer.classList.toggle("beginner-mode-active", isBeginnerMode);
+            }
+
+            if (beginnerAnalogyCard && currentComparisonData && currentComparisonData.overall_verdict && currentComparisonData.overall_verdict.beginner_analogy) {
+                if (isBeginnerMode) {
+                    beginnerAnalogyCard.classList.remove("hidden");
+                    beginnerAnalogyCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                } else {
+                    beginnerAnalogyCard.classList.add("hidden");
+                }
+            }
+        });
+    }
+
+    // IT 비유 사전 모달 열기/닫기 이벤트
+    if (dictionaryBtn && dictionaryModal) {
+        dictionaryBtn.addEventListener("click", () => {
+            dictionaryModal.classList.remove("hidden");
+        });
+
+        const closeModal = () => {
+            dictionaryModal.classList.add("hidden");
+        };
+
+        if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
+        if (modalOkBtn) modalOkBtn.addEventListener("click", closeModal);
+        dictionaryModal.addEventListener("click", (e) => {
+            if (e.target === dictionaryModal) closeModal();
+        });
+    }
+
     // 최신 비교 결과를 저장할 전역 변수
     let currentComparisonData = null;
 
@@ -217,6 +269,20 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("rec-a-desc").textContent = verdict.recommendation_a || "-";
         document.getElementById("rec-b-title").textContent = `${devB.name} 추천 대상`;
         document.getElementById("rec-b-desc").textContent = verdict.recommendation_b || "-";
+
+        // 초보자 일상 비유 요약 텍스트 주입
+        const analogy = verdict.beginner_analogy || `${devA.name}와 ${devB.name}의 성능과 특성을 일상 사물에 빗대어 알기 쉽게 비교 분석한 결과입니다.`;
+        if (beginnerAnalogyText) {
+            beginnerAnalogyText.textContent = analogy;
+        }
+
+        if (beginnerAnalogyCard) {
+            if (isBeginnerMode && verdict.beginner_analogy) {
+                beginnerAnalogyCard.classList.remove("hidden");
+            } else {
+                beginnerAnalogyCard.classList.add("hidden");
+            }
+        }
     }
 
     // 불릿 리스트(장점/단점) 렌더링 헬퍼 함수
@@ -279,8 +345,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const qA = encodeURIComponent(a.name);
         const qB = encodeURIComponent(b.name);
 
-        return `# ⚡ IT 기기 비교 대조: ${a.name} vs ${b.name}
+        const analogyBlock = v.beginner_analogy ? `
+## 🐣 초보자를 위한 3초 일상 비유 요약
+> ${v.beginner_analogy}
+` : "";
 
+        return `# ⚡ IT 기기 비교 대조: ${a.name} vs ${b.name}
+${analogyBlock}
 ## 📊 주요 스펙 및 가격 비교 표
 
 | 비교 항목 | ${a.name} | ${b.name} |

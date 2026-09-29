@@ -158,6 +158,7 @@ def generate_comparison_with_gemini(device_a: str, device_b: str, data_a: list, 
   }},
   "overall_verdict": {{
     "summary": "두 기기 총평 및 핵심 차이점 요약 (3~4줄)",
+    "beginner_analogy": "IT 초보자를 위해 자동차, 운동선수, 책상 등 일상 생활에 빗대어 두 기기의 성격과 체감 차이를 아주 쉽고 재미있게 설명한 2~3줄 비유",
     "recommendation_a": "{device_a}를 추천하는 대상 유형",
     "recommendation_b": "{device_b}를 추천하는 대상 유형"
   }}
