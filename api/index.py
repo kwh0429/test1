@@ -30,19 +30,21 @@ def search_web_serper(query: str, serper_key: str) -> list:
         return []
 
 def search_image_serper(device_name: str, serper_key: str) -> str:
-    """기기의 대표 이미지를 구글 이미지 검색(Serper Images)으로 가져오는 함수"""
+    """기기의 대표 이미지를 구글 이미지 검색(Serper Images)으로 가져오는 함수 (구글 캐시 썸네일 우선)"""
     if not serper_key:
         return ""
     url = "https://google.serper.dev/images"
     headers = {"X-API-KEY": serper_key, "Content-Type": "application/json"}
-    payload = {"q": f"{device_name} official 누끼 제품", "num": 3, "gl": "kr"}
+    payload = {"q": f"{device_name} official", "num": 5, "gl": "kr"}
     try:
         res = requests.post(url, headers=headers, json=payload, timeout=8)
         res.raise_for_status()
         data = res.json()
         images = data.get("images", [])
         if images and len(images) > 0:
-            return images[0].get("imageUrl", "")
+            # 핫링크(외부 차단) 방지를 위해 구글 썸네일 또는 안전한 CDN URL 선택
+            first = images[0]
+            return first.get("thumbnailUrl") or first.get("imageUrl", "")
     except Exception as e:
         logger.error(f"이미지 검색 실패: {e}")
     return ""

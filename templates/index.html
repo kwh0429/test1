@@ -892,9 +892,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const imgA = document.getElementById("img-device-a");
         const placeholderA = document.getElementById("img-placeholder-a");
         if (devA.image_url) {
+            imgA.referrerPolicy = "no-referrer";
             imgA.src = devA.image_url;
-            imgA.style.display = "block";
-            placeholderA.style.display = "none";
+            imgA.onload = () => {
+                imgA.style.display = "block";
+                placeholderA.style.display = "none";
+            };
+            imgA.onerror = () => {
+                imgA.style.display = "none";
+                placeholderA.style.display = "block";
+            };
         } else {
             imgA.style.display = "none";
             placeholderA.style.display = "block";
@@ -904,9 +911,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const imgB = document.getElementById("img-device-b");
         const placeholderB = document.getElementById("img-placeholder-b");
         if (devB.image_url) {
+            imgB.referrerPolicy = "no-referrer";
             imgB.src = devB.image_url;
-            imgB.style.display = "block";
-            placeholderB.style.display = "none";
+            imgB.onload = () => {
+                imgB.style.display = "block";
+                placeholderB.style.display = "none";
+            };
+            imgB.onerror = () => {
+                imgB.style.display = "none";
+                placeholderB.style.display = "block";
+            };
         } else {
             imgB.style.display = "none";
             placeholderB.style.display = "block";
