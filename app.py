@@ -27,11 +27,19 @@ else:
     genai.configure(api_key=GEMINI_API_KEY)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+
 app = Flask(
     __name__,
-    template_folder=os.path.join(BASE_DIR, "templates"),
-    static_folder=os.path.join(BASE_DIR, "static")
+    template_folder=TEMPLATES_DIR,
+    static_folder=STATIC_DIR
 )
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    from flask import send_from_directory
+    return send_from_directory(STATIC_DIR, filename)
 
 
 def search_web_serper(query: str) -> list:
