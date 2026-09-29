@@ -148,6 +148,7 @@ def generate_comparison_with_gemini(device_a: str, device_b: str, search_data_a:
 
 
 @app.route("/")
+@app.route("/api/index")
 def index():
     """메인 화면 페이지 렌더링"""
     return render_template("index.html")
