@@ -2,32 +2,18 @@ import os
 import json
 import logging
 import requests
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger(__name__)
-
 load_dotenv()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-
-app = Flask(
-    __name__,
-    template_folder=TEMPLATES_DIR,
-    static_folder=STATIC_DIR
-)
-
+app = Flask(__name__)
 
 def get_api_keys():
     g = (os.getenv("GEMINI_API_KEY") or "").strip().strip('"').strip("'")
     s = (os.getenv("SERPER_API_KEY") or "").strip().strip('"').strip("'")
     return g, s
-
 
 def search_web_serper(query: str, serper_key: str) -> list:
     if not serper_key:
@@ -40,10 +26,8 @@ def search_web_serper(query: str, serper_key: str) -> list:
         res.raise_for_status()
         data = res.json()
         return [{"title": item.get("title", ""), "snippet": item.get("snippet", "")} for item in data.get("organic", [])]
-    except Exception as e:
-        logger.error(f"Serper 에러: {e}")
+    except Exception:
         return []
-
 
 def generate_comparison_with_gemini(device_a: str, device_b: str, data_a: list, data_b: list, gemini_key: str) -> dict:
     genai.configure(api_key=gemini_key)
@@ -104,37 +88,33 @@ def generate_comparison_with_gemini(device_a: str, device_b: str, data_a: list, 
     return json.loads(res.text.strip())
 
 
-# 모든 진입 경로(GET / 및 POST)를 유연하게 수용하는 라우팅
-@app.route("/", methods=["GET", "POST"])
-@app.route("/api/index", methods=["GET", "POST"])
-@app.route("/api/compare", methods=["GET", "POST"])
-@app.route("/compare", methods=["GET", "POST"])
-def main_handler():
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
+@app.route("/<path:path>", methods=["GET", "POST"])
+def catch_all(path):
+    # POST 요청은 무조건 기기 비교 수행
     if request.method == "POST":
-        try:
-            data = request.get_json(silent=True) or {}
-            device_a = data.get("device_a", "").strip()
-            device_b = data.get("device_b", "").strip()
+        data = request.get_json(silent=True) or {}
+        device_a = data.get("device_a", "").strip()
+        device_b = data.get("device_b", "").strip()
 
-            if not device_a or not device_b:
-                return jsonify({"success": False, "error": "두 기기 이름을 모두 입력해 주세요."}), 400
+        if not device_a or not device_b:
+            return jsonify({"success": False, "error": "두 기기 이름을 모두 입력해 주세요."}), 400
 
-            gemini_key, serper_key = get_api_keys()
-            if not gemini_key or not serper_key:
-                return jsonify({
-                    "success": False,
-                    "error": "Vercel Settings -> Environment Variables에 GEMINI_API_KEY와 SERPER_API_KEY를 등록해 주세요."
-                }), 500
+        gemini_key, serper_key = get_api_keys()
+        if not gemini_key or not serper_key:
+            return jsonify({
+                "success": False,
+                "error": "Vercel Settings -> Environment Variables에 GEMINI_API_KEY와 SERPER_API_KEY를 등록해 주세요."
+            }), 500
 
-            search_a = search_web_serper(f"{device_a} 스펙 가격 장단점 리뷰", serper_key)
-            search_b = search_web_serper(f"{device_b} 스펙 가격 장단점 리뷰", serper_key)
+        search_a = search_web_serper(f"{device_a} 스펙 가격 장단점 리뷰", serper_key)
+        search_b = search_web_serper(f"{device_b} 스펙 가격 장단점 리뷰", serper_key)
 
-            result = generate_comparison_with_gemini(device_a, device_b, search_a, search_b, gemini_key)
-            return jsonify({"success": True, "data": result})
+        result = generate_comparison_with_gemini(device_a, device_b, search_a, search_b, gemini_key)
+        return jsonify({"success": True, "data": result})
 
-        except Exception as e:
-            logger.error(f"비교 실패: {e}", exc_info=True)
-            return jsonify({"success": False, "error": f"처리 오류: {str(e)}"}), 500
-
-    # GET 요청 시 메인 화면 렌더링
-    return render_template("index.html")
+    # GET 요청 시 메인 HTML 화면 직접 반환
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    html_path = os.path.join(base_dir, "templates", "index.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read(), 200, {"Content-Type": "text/html; charset=utf-8"}
