@@ -78,15 +78,71 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // 기기별 스마트 비주얼 생성 함수 (고화질 이미지 + 로드 실패 시 글래스모피즘 테크 뱃지 자동 전환)
+    function getDeviceVisualHtml(device, fallbackPreset) {
+        const name = (device.name || "").toLowerCase();
+        let icon = "📱";
+        let typeLabel = "스마트폰";
+
+        if (name.includes("macbook") || name.includes("laptop") || name.includes("그램") || name.includes("노트북") || name.includes("book")) {
+            icon = "💻";
+            typeLabel = "노트북 / PC";
+        } else if (name.includes("ipad") || name.includes("tab") || name.includes("패드") || name.includes("태블릿")) {
+            icon = "📟";
+            typeLabel = "태블릿";
+        } else if (name.includes("watch") || name.includes("워치")) {
+            icon = "⌚";
+            typeLabel = "스마트워치";
+        } else if (name.includes("airpods") || name.includes("buds") || name.includes("헤드폰") || name.includes("버즈") || name.includes("이어폰")) {
+            icon = "🎧";
+            typeLabel = "오디오";
+        }
+
+        const targetUrl = device.image_url || fallbackPreset;
+
+        return `
+            <img class="device-img" 
+                 src="${targetUrl}" 
+                 referrerpolicy="no-referrer" 
+                 alt="${device.name}"
+                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="device-fallback-badge" style="display: none;">
+                <span class="badge-icon">${icon}</span>
+                <span class="badge-sub">${typeLabel}</span>
+            </div>
+        `;
+    }
+
     // 3. 비교 결과 렌더링 함수
     function renderComparison(data) {
         const devA = data.device_a;
         const devB = data.device_b;
-        const verdict = data.overall_verdict;
+        const verdict = data.overall_verdict || {};
 
-        // 테이블 헤더
-        document.getElementById("th-device-a").textContent = devA.name;
-        document.getElementById("th-device-b").textContent = devB.name;
+        // 테이블 헤더 (이름 및 대표 이미지 직접 생성 주입)
+        const cellA = document.getElementById("th-device-a");
+        const cellB = document.getElementById("th-device-b");
+
+        const imgHtmlA = getDeviceVisualHtml(devA, "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80");
+        const imgHtmlB = getDeviceVisualHtml(devB, "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80");
+
+        cellA.innerHTML = `
+            <div class="device-header-cell">
+                <div class="device-img-wrapper" title="${devA.name}">
+                    ${imgHtmlA}
+                </div>
+                <span class="device-title">${devA.name}</span>
+            </div>
+        `;
+
+        cellB.innerHTML = `
+            <div class="device-header-cell">
+                <div class="device-img-wrapper" title="${devB.name}">
+                    ${imgHtmlB}
+                </div>
+                <span class="device-title">${devB.name}</span>
+            </div>
+        `;
 
         // 가격
         document.getElementById("val-price-a").textContent = devA.price_range || "가격 정보 없음";
