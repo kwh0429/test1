@@ -42,15 +42,16 @@ def serve_static(filename):
     return send_from_directory(STATIC_DIR, filename)
 
 
-def search_web_serper(query: str) -> list:
+def search_web_serper(query: str, api_key: str = None) -> list:
     """Serper API를 호출하여 구글 실시간 검색 결과를 가져오는 함수"""
-    if not SERPER_API_KEY:
+    active_key = api_key or (os.getenv("SERPER_API_KEY") or "").strip().strip('"').strip("'")
+    if not active_key:
         logger.error("Serper API Key 누락으로 검색을 진행할 수 없습니다.")
         return []
 
     url = "https://google.serper.dev/search"
     headers = {
-        "X-API-KEY": SERPER_API_KEY,
+        "X-API-KEY": active_key,
         "Content-Type": "application/json"
     }
     payload = {
@@ -173,18 +174,24 @@ def compare():
 
         logger.info(f"비교 요청 접수: 기기 A='{device_a}', 기기 B='{device_b}'")
 
-        # 1. 입력값 검증 (두 기기명 모두 필수)
+        # Vercel 서버리스 환경을 위한 최신 환경변수 동적 로드
+        g_key = (os.getenv("GEMINI_API_KEY") or "").strip().strip('"').strip("'")
+        s_key = (os.getenv("SERPER_API_KEY") or "").strip().strip('"').strip("'")
+
         if not device_a or not device_b:
             return jsonify({
                 "success": False,
                 "error": "두 기기 이름을 모두 입력해 주세요."
             }), 400
 
-        if not SERPER_API_KEY or not GEMINI_API_KEY:
+        if not s_key or not g_key:
             return jsonify({
                 "success": False,
-                "error": ".env 파일에 GEMINI_API_KEY와 SERPER_API_KEY가 올바르게 설정되어 있는지 확인해 주세요."
+                "error": "Vercel 대시보드의 Settings -> Environment Variables에 GEMINI_API_KEY와 SERPER_API_KEY가 등록되어 있는지 확인해 주세요."
             }), 500
+
+        # 구글 AI 최신 키로 재구성
+        genai.configure(api_key=g_key)
 
         # 2. Serper API로 기기 A와 B 최신 정보 검색
         query_a = f"{device_a} 스펙 가격 장단점 리뷰"
